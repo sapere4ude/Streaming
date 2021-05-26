@@ -21,6 +21,8 @@
 		B7B0610E265BCD80008761C8 /* LiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B06108265BCD80008761C8 /* LiveViewController.swift */; };
 		B7B0610F265BCD80008761C8 /* PlaybackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7B06109265BCD80008761C8 /* PlaybackViewController.swift */; };
 		B7B06111265BCD8D008761C8 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B7B06110265BCD8D008761C8 /* Icon.png */; };
+		B7B06115265E1350008761C8 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B7B06114265DEFF5008761C8 /* sample.mp4 */; };
+		B7B06117265E1640008761C8 /* final.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B7B06116265E1640008761C8 /* final.mp4 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +42,9 @@
 		B7B06108265BCD80008761C8 /* LiveViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiveViewController.swift; sourceTree = "<group>"; };
 		B7B06109265BCD80008761C8 /* PlaybackViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaybackViewController.swift; sourceTree = "<group>"; };
 		B7B06110265BCD8D008761C8 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		B7B06114265DEFF5008761C8 /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.mp4; sourceTree = "<group>"; };
+		B7B06116265E1640008761C8 /* final.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = final.mp4; sourceTree = "<group>"; };
+		B7B06118265E1650008761C8 /* final.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = final.mp4; sourceTree = "<group>"; };
 		BE0F8ADC270AED4C31AC3225 /* Pods-Streaming.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Streaming.debug.xcconfig"; path = "Target Support Files/Pods-Streaming/Pods-Streaming.debug.xcconfig"; sourceTree = "<group>"; };
 		E6FC4CA470E78EC722918812 /* Pods-Streaming.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Streaming.release.xcconfig"; path = "Target Support Files/Pods-Streaming/Pods-Streaming.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -59,6 +64,7 @@
 		B7B060E4265B519E008761C8 = {
 			isa = PBXGroup;
 			children = (
+				B7B06116265E1640008761C8 /* final.mp4 */,
 				B7B060EF265B519E008761C8 /* Streaming */,
 				B7B060EE265B519E008761C8 /* Products */,
 				DAD7824548E5F2A16A8470F0 /* Pods */,
@@ -88,6 +94,8 @@
 				B7B06107265BCD80008761C8 /* PreferenceViewController.swift */,
 				B7B06106265BCD80008761C8 /* VisualEffect.swift */,
 				B7B060F9265B519F008761C8 /* Assets.xcassets */,
+				B7B06118265E1650008761C8 /* final.mp4 */,
+				B7B06114265DEFF5008761C8 /* sample.mp4 */,
 				B7B060F6265B519E008761C8 /* Main.storyboard */,
 				B7B060FB265B519F008761C8 /* LaunchScreen.storyboard */,
 				B7B060FE265B519F008761C8 /* Info.plist */,
@@ -171,6 +179,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B7B06117265E1640008761C8 /* final.mp4 in Resources */,
+				B7B06115265E1350008761C8 /* sample.mp4 in Resources */,
 				B7B06111265BCD8D008761C8 /* Icon.png in Resources */,
 				B7B060FD265B519F008761C8 /* LaunchScreen.storyboard in Resources */,
 				B7B060FA265B519F008761C8 /* Assets.xcassets in Resources */,

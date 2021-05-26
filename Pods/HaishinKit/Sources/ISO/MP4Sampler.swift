@@ -55,7 +55,8 @@ public class MP4Sampler {
             return
         }
         let url: URL = files.first!
-        let handler: Handler? = handlers[url]!
+        
+        let handler: Handler? = handlers[url] ?? nil
         files.remove(at: 0)
         handlers[url] = nil
         execute(url: url)

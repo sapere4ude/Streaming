@@ -6,7 +6,7 @@ import VideoToolbox
 
 final class ExampleRecorderDelegate: DefaultAVRecorderDelegate {
     static let `default` = ExampleRecorderDelegate()
-
+    
     override func didFinishWriting(_ recorder: AVRecorder) {
         guard let writer: AVAssetWriter = recorder.writer else {
             return
@@ -25,7 +25,7 @@ final class ExampleRecorderDelegate: DefaultAVRecorderDelegate {
 
 final class LiveViewController: UIViewController {
     private static let maxRetryCount: Int = 5
-
+    
     @IBOutlet private weak var lfView: MTHKView!
     @IBOutlet private weak var currentFPSLabel: UILabel!
     @IBOutlet private weak var publishButton: UIButton!
@@ -37,21 +37,26 @@ final class LiveViewController: UIViewController {
     @IBOutlet private weak var audioBitrateSlider: UISlider!
     @IBOutlet private weak var fpsControl: UISegmentedControl!
     @IBOutlet private weak var effectSegmentControl: UISegmentedControl!
-
+    
     private var rtmpConnection = RTMPConnection()
     private var rtmpStream: RTMPStream!
     private var sharedObject: RTMPSharedObject!
     private var currentEffect: VideoEffect?
     private var currentPosition: AVCaptureDevice.Position = .back
     private var retryCount: Int = 0
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         rtmpStream = RTMPStream(connection: rtmpConnection)
         if let orientation = DeviceUtil.videoOrientation(by: UIApplication.shared.statusBarOrientation) {
             rtmpStream.orientation = orientation
         }
+        
+        rtmpStream.appendFile(URL(fileURLWithPath: Bundle.main.path(forResource: "final", ofType: "mp4")!), completionHandler: {
+            print("파일 추가 성공")
+        })
+        
         rtmpStream.captureSettings = [
             .sessionPreset: AVCaptureSession.Preset.hd1280x720,
             .continuousAutofocus: true,
@@ -63,29 +68,31 @@ final class LiveViewController: UIViewController {
             .height: 1280
         ]
         rtmpStream.mixer.recorder.delegate = ExampleRecorderDelegate.shared
-
+        
         videoBitrateSlider?.value = Float(RTMPStream.defaultVideoBitrate) / 1000
         audioBitrateSlider?.value = Float(RTMPStream.defaultAudioBitrate) / 1000
-
+        
         NotificationCenter.default.addObserver(self, selector: #selector(on(_:)), name: UIDevice.orientationDidChangeNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground(_:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         logger.info("viewWillAppear")
         super.viewWillAppear(animated)
         rtmpStream.attachAudio(AVCaptureDevice.default(for: .audio)) { error in
             logger.warn(error.description)
         }
-        rtmpStream.attachCamera(DeviceUtil.device(withPosition: currentPosition)) { error in
-//        rtmpStream.attachCamera(nil) { error in
+//        rtmpStream.attachCamera(DeviceUtil.device(withPosition: currentPosition)) { error in
+        rtmpStream.attachCamera(nil) { error in
             logger.warn(error.description)
         }
+        
         rtmpStream.addObserver(self, forKeyPath: "currentFPS", options: .new, context: nil)
         lfView?.attachStream(rtmpStream)
+        
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         logger.info("viewWillDisappear")
         super.viewWillDisappear(animated)
@@ -93,7 +100,7 @@ final class LiveViewController: UIViewController {
         rtmpStream.close()
         rtmpStream.dispose()
     }
-
+    
     @IBAction func rotateCamera(_ sender: UIButton) {
         logger.info("rotateCamera")
         let position: AVCaptureDevice.Position = currentPosition == .back ? .front : .back
@@ -103,11 +110,11 @@ final class LiveViewController: UIViewController {
         }
         currentPosition = position
     }
-
+    
     @IBAction func toggleTorch(_ sender: UIButton) {
         rtmpStream.torch.toggle()
     }
-
+    
     @IBAction func on(slider: UISlider) {
         if slider == audioBitrateSlider {
             audioBitrateLabel?.text = "audio \(Int(slider.value))/kbps"
@@ -121,15 +128,15 @@ final class LiveViewController: UIViewController {
             rtmpStream.setZoomFactor(CGFloat(slider.value), ramping: true, withRate: 5.0)
         }
     }
-
+    
     @IBAction func on(pause: UIButton) {
         rtmpStream.paused.toggle()
     }
-
+    
     @IBAction func on(close: UIButton) {
         self.dismiss(animated: true, completion: nil)
     }
-
+    
     @IBAction func on(publish: UIButton) {
         if publish.isSelected {
             UIApplication.shared.isIdleTimerDisabled = false
@@ -146,7 +153,7 @@ final class LiveViewController: UIViewController {
         }
         publish.isSelected.toggle()
     }
-
+    
     @objc
     private func rtmpStatusHandler(_ notification: Notification) {
         let e = Event.from(notification)
@@ -154,11 +161,15 @@ final class LiveViewController: UIViewController {
             return
         }
         logger.info(code)
+        
+        // 여기에 넣고 진행했었음
+        
         switch code {
         case RTMPConnection.Code.connectSuccess.rawValue:
             retryCount = 0
+            
             rtmpStream!.publish(Preference.defaultInstance.streamName!)
-            // sharedObject!.connect(rtmpConnection)
+        // sharedObject!.connect(rtmpConnection)
         case RTMPConnection.Code.connectFailed.rawValue, RTMPConnection.Code.connectClosed.rawValue:
             guard retryCount <= LiveViewController.maxRetryCount else {
                 return
@@ -170,13 +181,13 @@ final class LiveViewController: UIViewController {
             break
         }
     }
-
+    
     @objc
     private func rtmpErrorHandler(_ notification: Notification) {
         logger.error(notification)
         rtmpConnection.connect(Preference.defaultInstance.uri!)
     }
-
+    
     func tapScreen(_ gesture: UIGestureRecognizer) {
         if let gestureView = gesture.view, gesture.state == .ended {
             let touchPoint: CGPoint = gesture.location(in: gestureView)
@@ -185,7 +196,7 @@ final class LiveViewController: UIViewController {
             rtmpStream.setPointOfInterest(pointOfInterest, exposure: pointOfInterest)
         }
     }
-
+    
     @IBAction private func onFPSValueChanged(_ segment: UISegmentedControl) {
         switch segment.selectedSegmentIndex {
         case 0:
@@ -198,7 +209,7 @@ final class LiveViewController: UIViewController {
             break
         }
     }
-
+    
     @IBAction private func onEffectValueChanged(_ segment: UISegmentedControl) {
         if let currentEffect: VideoEffect = currentEffect {
             _ = rtmpStream.unregisterVideoEffect(currentEffect)
@@ -214,7 +225,7 @@ final class LiveViewController: UIViewController {
             break
         }
     }
-
+    
     @objc
     private func on(_ notification: Notification) {
         guard let orientation = DeviceUtil.videoOrientation(by: UIApplication.shared.statusBarOrientation) else {
@@ -222,17 +233,17 @@ final class LiveViewController: UIViewController {
         }
         rtmpStream.orientation = orientation
     }
-
+    
     @objc
     private func didEnterBackground(_ notification: Notification) {
         // rtmpStream.receiveVideo = false
     }
-
+    
     @objc
     private func didBecomeActive(_ notification: Notification) {
         // rtmpStream.receiveVideo = true
     }
-
+    
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
         if Thread.isMainThread {
             currentFPSLabel?.text = "\(rtmpStream.currentFPS)"
